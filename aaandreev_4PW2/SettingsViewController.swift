@@ -1,5 +1,5 @@
 //
-//   SettingsViewController.swift
+//  SettingsViewController.swift
 //  aaandreev_4PW2
 //
 //  Created by  Антон Андреев on 24.09.2021.
@@ -16,6 +16,7 @@ final class SettingsViewController: UIViewController {
         setupSettingsView()
         setupLocationToggle()
         setupCloseButton()
+        setupLocationManager()
     }
     
     
@@ -52,6 +53,25 @@ final class SettingsViewController: UIViewController {
             action: #selector(ViewController.locationToggleSwitched),
             for: .valueChanged
         )
+    }
+    
+    private func setupLocationManager(){
+        let locationLabel = UILabel()
+        settingsView.addSubview(locationLabel)
+        locationLabel.text = "Location"
+        locationLabel.translatesAutoresizingMaskIntoConstraints = false
+        locationLabel.topAnchor.constraint(
+            equalTo: settingsView.topAnchor,
+            constant: 55
+        ).isActive = true
+        locationLabel.leadingAnchor.constraint(
+            equalTo: settingsView.leadingAnchor,
+            constant: 10
+        ).isActive = true
+        locationLabel.trailingAnchor.constraint(
+            equalTo: locationToggle.leadingAnchor,
+            constant: -10
+        ).isActive = true
     }
     
     private func setupCloseButton() {
