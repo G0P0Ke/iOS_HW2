@@ -8,17 +8,24 @@
 import UIKit
 import CoreLocation
 
-class ViewController: UIViewController {
+@objc protocol ViewControllerDelegate: AnyObject {
+    
+    @objc func locationToggleSwitched(_ sender: UISwitch)
+}
+
+
+class ViewController: UIViewController{
     private let settingsView = UIStackView()
     private let setView = UIView()
     private let settingsButton = UIButton(type: .system)
     private let locationTextView = UITextView()
     private let locationManager = CLLocationManager()
     private let locationToggle = UISwitch()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColorFromHex(rgbValue: 0x80ffff)
+        self.title = "Локация"
         setupLocationTextView()
         setupSettingsView()
         setupLocationManager()
@@ -26,6 +33,11 @@ class ViewController: UIViewController {
         setupSettingsButton()
         setupSliders()
         locationManager.requestWhenInUseAuthorization()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let destination = segue.destination as? SettingsViewController else { return }
+        destination.delegate = self
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -47,12 +59,6 @@ class ViewController: UIViewController {
             navigationController?.pushViewController(
                 SettingsViewController(),
                 animated: true
-            )
-        case 3:
-            present(
-                SettingsViewController(),
-                animated: true,
-                completion: nil
             )
         default:
             buttonCount = -1
@@ -157,23 +163,7 @@ class ViewController: UIViewController {
         locationLabel.text = "Location"
     }
     
-    @objc
-    func locationToggleSwitched(_ sender: UISwitch) {
-        if sender.isOn {
-            if CLLocationManager.locationServicesEnabled() {
-                locationManager.delegate = self
-                locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-                locationManager.startUpdatingLocation()
-                
-            } else {
-                sender.setOn(false, animated: true)
-            }
-        } else {
-            locationTextView.text = ""
-            locationManager.stopUpdatingLocation()
-        }
-    }
-    
+
     private let sliders = [UISlider(), UISlider(), UISlider()]
     private let colors = ["Red", "Green", "Blue"]
     private func setupSliders() {
@@ -266,6 +256,25 @@ extension ViewController: CLLocationManagerDelegate {
     ) {
         guard let coord: CLLocationCoordinate2D = manager.location?.coordinate else { return }
         locationTextView.text = "Coordinates = \(coord.latitude) \(coord.longitude)"
+    }
+}
+
+extension ViewController: ViewControllerDelegate {
+    @objc
+    func locationToggleSwitched(_ sender: UISwitch) {
+        if sender.isOn {
+            if CLLocationManager.locationServicesEnabled() {
+                locationManager.delegate = self
+                locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+                locationManager.startUpdatingLocation()
+                
+            } else {
+                sender.setOn(false, animated: true)
+            }
+        } else {
+            locationTextView.text = ""
+            locationManager.stopUpdatingLocation()
+        }
     }
 }
 

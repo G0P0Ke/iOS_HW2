@@ -10,14 +10,16 @@ import UIKit
 final class SettingsViewController: UIViewController {
     private let settingsView = UIView()
     private let locationToggle = UISwitch()
-    
+    weak var delegate: ViewControllerDelegate?
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = UIColorFromHex(rgbValue: 0x80ffff)
+        self.title = "Settings"
         setupSettingsView()
         setupLocationToggle()
-        setupCloseButton()
         setupLocationManager()
     }
+    
     
     
     private func setupSettingsView(){
@@ -27,14 +29,18 @@ final class SettingsViewController: UIViewController {
         settingsView.translatesAutoresizingMaskIntoConstraints = false
         settingsView.topAnchor.constraint(
             equalTo: view.safeAreaLayoutGuide.topAnchor,
-            constant: 10
+            constant: 60
         ).isActive = true
-        settingsView.trailingAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.trailingAnchor,
-            constant: -10
+        settingsView.centerXAnchor.constraint(
+            equalTo: view.centerXAnchor
+            ).isActive = true
+        settingsView.heightAnchor.constraint(
+           equalToConstant: 300
         ).isActive = true
-        settingsView.heightAnchor.constraint(equalToConstant: 300).isActive = true
-        settingsView.widthAnchor.constraint(equalToConstant:  200).isActive = true
+        settingsView.leadingAnchor.constraint(
+            equalTo: view.leadingAnchor,
+            constant: 15
+        ).isActive = true
     }
     
     private func setupLocationToggle() {
@@ -48,12 +54,14 @@ final class SettingsViewController: UIViewController {
             equalTo: settingsView.trailingAnchor,
             constant: -10
         ).isActive = true
-        locationToggle.addTarget(
-            self,
-            action: #selector(ViewController.locationToggleSwitched),
-            for: .valueChanged
-        )
+//        locationToggle.addTarget(
+//            self,
+//            action: #selector(delegate?.locationToggleSwitched),
+//            for: .valueChanged
+//        )
+        // При переключении вылетает exception...
     }
+    
     
     private func setupLocationManager(){
         let locationLabel = UILabel()
@@ -74,33 +82,6 @@ final class SettingsViewController: UIViewController {
         ).isActive = true
     }
     
-    private func setupCloseButton() {
-        let button = UIButton(type: .close)
-        view.addSubview(button)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.trailingAnchor.constraint(
-            equalTo: view.trailingAnchor,
-            constant: -10
-        ).isActive = true
-        button.topAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.topAnchor,
-            constant: 10
-        ).isActive = true
-        button.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        button.widthAnchor.constraint(
-            equalTo: button.heightAnchor
-        ).isActive = true
-        button.addTarget(
-            self,
-            action: #selector(closeScreen),
-            for: .touchUpInside
-        )
-    }
-    
-    @objc
-    private func closeScreen() {
-        dismiss(animated: true, completion: nil)
-    }
     
     func UIColorFromHex(rgbValue:UInt32,_ alpha:Double=1.0) -> UIColor {
         let red = CGFloat((rgbValue & 0xFF0000) >> 16)/256.0
